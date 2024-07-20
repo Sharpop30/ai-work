@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מושגי יסוד בבינה מלאכותית</title>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            direction: rtl;
+        }
+    </style>
+</head>
+<body class="bg-blue-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const aiConcepts = [
+            {
+                term: "בינה מלאכותית (AI)",
+                definition: "שם מטאפורי למצב בו מנסים לדמות את יכולות החשיבה האנושית באמצעים טכנולוגיים. יישומים כוללים מנועי חיפוש, מערכות המלצות, הבנת דיבור, מכוניות אוטונומיות, ועוד."
+            },
+            {
+                term: "למידת מכונה (ML)",
+                definition: "שיטה ללימוד של מערכת מחשוב בלי להגדיר לה את מכלול הכללים והתנאים באופן מפורש, אלא בהתבסס על הזנתה בכמויות גדולות של מידע."
+            },
+            {
+                term: "למידה עמוקה (DL)",
+                definition: "סוג של למידת מכונה המתבסס על רשתות נוירונים מלאכותיות מרובות שכבות, מעוצב בהשראת המוח האנושי."
+            },
+            {
+                term: "בינה מלאכותית יוצרת",
+                definition: "יישומים המאפשרים ליצור תוכן חדש (טקסטים, תמונות, סרטונים, מוזיקה, קוד) באמצעות שאילתה קצרה, בהתבסס על מידע אימון."
+            },
+            {
+                term: "עיבוד שפה טבעית (NLP)",
+                definition: "תת-תחום של בינה מלאכותית העוסק בפיתוח היכולת של מחשבים להבין שפה אנושית."
+            },
+            {
+                term: "מודלי שפה גדולים (LLM)",
+                definition: "מודלים חזקים וגדולים המסוגלים לבצע משימות שונות, מאומנים על מידע בהיקף עצום בתחומים שונים."
+            },
+            {
+                term: "פרומפט (Prompt)",
+                definition: "הנחייה טקסטואלית שמוזנת למערכת AI, המובילה ליצירת תוצר כלשהו (טקסט, תמונה, מידע)."
+            },
+            {
+                term: "טוקן (Token)",
+                definition: "יחידת טקסט קטנה (מילה, סימן פיסוק, או תו יחיד) המשמשת בתהליכי עיבוד שפה טבעית ולמידת מכונה."
+            },
+            {
+                term: "מולטי-מודל",
+                definition: "היכולת להזין למודל בינה מלאכותית מגוון רחב של סוגי קלט (טקסט, תמונה, אודיו, וידאו) ולקבל פלט רלוונטי."
+            }
+        ];
+
+        const AiConceptsLearningInterface = () => {
+            const [currentPage, setCurrentPage] = React.useState('learn');
+            const [quizQuestions, setQuizQuestions] = React.useState([]);
+            const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+
+            const startQuiz = () => {
+                const shuffledConcepts = [...aiConcepts].sort(() => 0.5 - Math.random());
+                const selectedConcepts = shuffledConcepts.slice(0, 5);
+                const questions = selectedConcepts.map(concept => ({
+                    term: concept.term,
+                    definition: concept.definition,
+                    options: [concept.term, ...shuffledConcepts.filter(c => c !== concept).slice(0, 3).map(c => c.term)].sort(() => 0.5 - Math.random())
+                }));
+                setQuizQuestions(questions);
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setCurrentPage('quiz');
+            };
+
+            const handleAnswer = (selectedAnswer) => {
+                if (selectedAnswer === quizQuestions[currentQuestionIndex].term) {
+                    setScore(score + 1);
+                }
+                if (currentQuestionIndex < quizQuestions.length - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                } else {
+                    setCurrentPage('results');
+                }
+            };
+
+            const renderLearnPage = () => (
+                <div className="space-y-4">
+                    {aiConcepts.map((concept, index) => (
+                        <div key={index} className="bg-white rounded-lg shadow-md p-3 sm:p-4 border-2 border-blue-300">
+                            <h2 className="text-base sm:text-lg font-semibold text-blue-800 mb-2">{concept.term}</h2>
+                            <p className="text-sm sm:text-base text-blue-700">{concept.definition}</p>
+                        </div>
+                    ))}
+                    <button onClick={startQuiz} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded text-lg">
+                        התחל חידון
+                    </button>
+                </div>
+            );
+
+            const renderQuizPage = () => (
+                <div className="space-y-4">
+                    <div className="bg-blue-200 h-2 rounded-full">
+                        <div 
+                            className="bg-blue-500 h-2 rounded-full" 
+                            style={{width: `${((currentQuestionIndex + 1) / quizQuestions.length) * 100}%`}}
+                        ></div>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 border-2 border-blue-300">
+                        <h2 className="text-base sm:text-lg font-semibold text-blue-800 mb-4">{quizQuestions[currentQuestionIndex].definition}</h2>
+                        <div className="space-y-3">
+                            {quizQuestions[currentQuestionIndex].options.map((option, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleAnswer(option)}
+                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded text-base sm:text-lg"
+                                >
+                                    {option}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderResultsPage = () => (
+                <div className="bg-white rounded-lg shadow-md p-4 border-2 border-blue-300">
+                    <h2 className="text-lg font-semibold text-blue-800 mb-4">תוצאות החידון</h2>
+                    <p className="text-xl font-bold text-center mb-4">
+                        הצלחת ב-{score} מתוך {quizQuestions.length} שאלות!
+                    </p>
+                    <button
+                        onClick={() => setCurrentPage('learn')}
+                        className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded text-lg"
+                    >
+                        חזרה ללמידה
+                    </button>
+                </div>
+            );
+
+            return (
+                <div className="p-2 sm:p-4 max-w-2xl mx-auto">
+                    <h1 className="text-xl sm:text-2xl font-bold text-purple-700 mb-4 text-center">
+                        מושגי יסוד בבינה מלאכותית
+                    </h1>
+                    {currentPage === 'learn' && renderLearnPage()}
+                    {currentPage === 'quiz' && renderQuizPage()}
+                    {currentPage === 'results' && renderResultsPage()}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AiConceptsLearningInterface />, document.getElementById('root'));
+    </script>
+</body>
+</html>
